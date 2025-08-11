@@ -1,0 +1,7 @@
+.venv/
+__pycache__/
+*.xlsx
+excel_raporlar/
+veri_kaydi.json
+saved_data.json
+data.json
