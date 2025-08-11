@@ -48,7 +48,7 @@ def calculate_summary(error_data, start_time, end_time, produced_beds, unit_time
         "Etüt Süresi (dk)": [round(total_etud_minutes, 2)],
         "Toplam Planlı Süre (sn)": [round(total_planned_sec, 2)],
         "Toplam Plansız Süre (sn)": [round(total_unplanned_sec, 2)],
-        "Toplam Hatalı Süre (sn)": [round(total_errors_sec, 2)],
+        "Toplam Duruş Süresi (sn)": [round(total_errors_sec, 2)],
         "Kapasite Kullanımı (%)": [round(utilization, 2)],
         "Gerçekleşen Üretim (adet)": [int(produced_beds)],
         "Planlanan Üretim (adet)": [round(planned_production, 2)],
@@ -100,3 +100,4 @@ def render_summary_charts(error_data, summary_df: pd.DataFrame):
     planned = float(summary_df.loc[0,"Planlanan Üretim (adet)"])
     actual  = float(summary_df.loc[0,"Gerçekleşen Üretim (adet)"])
     st.bar_chart(pd.DataFrame({"Üretim":[planned, actual]}, index=["Planlanan","Gerçekleşen"]))
+
