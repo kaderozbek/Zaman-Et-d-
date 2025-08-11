@@ -15,7 +15,7 @@ def _fmt_time(t: Any) -> str:
         return t.strftime("%H:%M:%S")
     return str(t)
 
-# ---- 1) Ham tablo export ----
+# ---- 1) Ham tablo export (değişmedi) ----
 def export_current_session_to_excel(
     etud_info: Tuple[str, str, Any, str, time, time, int, int, float, float],
     error_data: Iterable[Dict[str, Any]],
@@ -91,7 +91,7 @@ def export_current_session_to_excel(
     return file_path
 
 
-# ---- 2) Tek sayfa “rapor görünümü” export ----
+# ---- 2) Tek sayfa “rapor görünümü” export (Planlı / Plansız ayrı tablolar) ----
 def export_pretty_report(
     etud_info: Tuple[str, str, Any, str, time, time, int, int, float, float],
     error_data: Iterable[Dict[str, Any]],
@@ -99,7 +99,8 @@ def export_pretty_report(
     out_path: str,
 ) -> str:
     """
-    Tek sayfa şık rapor (openpyxl ile). 'Duruş' isimleriyle uyumludur.
+    Tek sayfa şık rapor (openpyxl ile).
+    Planlı ve Plansız duruşlar iki AYRI tablo olarak yazılır.
     """
     try:
         from openpyxl import Workbook
@@ -173,7 +174,7 @@ def export_pretty_report(
     ws.cell(row=sum_header_row, column=1, value="Özet Göstergeler").font = Font(size=12, bold=True)
     ws.cell(row=sum_header_row, column=1).alignment = left
 
-    # metrikler (2 sütun label-value x 4 satır)
+    # metrikler
     metrics = [
         ("Etüt Süresi (dk)", _num(etud_minutes,2)),
         ("Toplam Planlı Süre (dk)", _num(planned_sec/60,2)),
@@ -192,41 +193,52 @@ def export_pretty_report(
         ws.cell(row=mrow+rr, column=4, value=metrics[idx][0]).font = bold
         ws.cell(row=mrow+rr, column=5, value=metrics[idx][1]); idx += 1
 
-    # duruş listesi başlık
-    table_start = mrow + 5
-    ws.merge_cells(start_row=table_start, start_column=1, end_row=table_start, end_column=7)
-    ws.cell(row=table_start, column=1, value="Duruş Listesi").font = Font(size=12, bold=True)
-    ws.cell(row=table_start, column=1).alignment = left
+    # ---- YENİ: İki ayrı tablo yazıcı ----
+    def write_stops_table(start_r: int, title: str, records: list) -> int:
+        """Başlık + tablo (Açıklama, Süre sn/dk). Bitişten sonraki satırı döndürür."""
+        # başlık
+        ws.merge_cells(start_row=start_r, start_column=1, end_row=start_r, end_column=7)
+        ws.cell(row=start_r, column=1, value=title).font = Font(size=12, bold=True)
+        ws.cell(row=start_r, column=1).alignment = left
 
-    headers = ["Duruş Türü", "Duruş Açıklaması", "Süre (sn)", "Süre (dk)"]
-    for c, h in enumerate(headers, start=1):
-        cell = ws.cell(row=table_start+1, column=c, value=h)
-        cell.font = bold
-        cell.fill = header_fill
-        cell.alignment = center
-        cell.border = border
+        # header
+        hdrs = ["Açıklama", "Süre (sn)", "Süre (dk)"]
+        for c, h in enumerate(hdrs, start=1):
+            cell = ws.cell(row=start_r+1, column=c, value=h)
+            cell.font = bold; cell.fill = header_fill; cell.alignment = center; cell.border = border
 
-    # veri satırları
-    data_start = table_start + 2
+        # rows
+        r0 = start_r + 2
+        if records:
+            for i, e in enumerate(records):
+                row_idx = r0 + i
+                sec = float(e.get("Süre (sn)", 0) or 0)
+                ws.cell(row=row_idx, column=1, value=e.get("Açıklama","")).border = border
+                ws.cell(row=row_idx, column=2, value=sec).border = border
+                ws.cell(row=row_idx, column=3, value=round(sec/60,2)).border = border
+            end_row = r0 + len(records)
+        else:
+            ws.cell(row=r0, column=1, value="Veri yok").border = border
+            ws.cell(row=r0, column=2, value="").border = border
+            ws.cell(row=r0, column=3, value="").border = border
+            end_row = r0 + 1
+
+        return end_row + 1  # bir satır boşluk
+
+    # kayıtları ayır (geri uyumlu)
     error_data = list(error_data or [])
-    if error_data:
-        for i, e in enumerate(error_data):
-            row_idx = data_start + i
-            durus_turu = e.get("Duruş Türü", e.get("Hata Türü", ""))
-            aciklama = e.get("Açıklama", "")
-            sure_sn = e.get("Süre (sn)", 0) or 0
-            ws.cell(row=row_idx, column=1, value=durus_turu).border = border
-            ws.cell(row=row_idx, column=2, value=aciklama).border = border
-            ws.cell(row=row_idx, column=3, value=sure_sn).border = border
-            ws.cell(row=row_idx, column=4, value=round(float(sure_sn)/60, 2)).border = border
-    else:
-        row_idx = data_start
-        ws.cell(row=row_idx, column=1, value="—").border = border
-        ws.cell(row=row_idx, column=2, value="Duruş yok").border = border
-        ws.cell(row=row_idx, column=3, value="").border = border
-        ws.cell(row=row_idx, column=4, value="").border = border
+    planned_records = [e for e in error_data if (e.get("Duruş Türü", e.get("Hata Türü","")) == "Planlı")]
+    unplanned_records = [e for e in error_data if (e.get("Duruş Türü", e.get("Hata Türü","")) == "Plansız")]
 
-    ws.freeze_panes = ws[f"A{data_start}"]
+    # planlı tablo
+    cur = mrow + 6
+    cur = write_stops_table(cur, "Planlı Duruşlar", planned_records)
+
+    # plansız tablo
+    cur = write_stops_table(cur, "Plansız Duruşlar", unplanned_records)
+
+    # dondurma (ilk tablonun veri başlangıcına yakın)
+    ws.freeze_panes = ws[f"A{mrow+8}"]
 
     os.makedirs(os.path.dirname(out_path) or ".", exist_ok=True)
     wb.save(out_path)
