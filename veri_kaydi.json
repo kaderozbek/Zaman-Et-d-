@@ -1,0 +1,118 @@
+{
+    "2025-08-01_Dizgi - 7": {
+        "tarih": "2025-08-01",
+        "makine": "Dizgi - 7",
+        "operator": "Kader",
+        "vardiya": "1. Vardiya",
+        "hatalar": [
+            {
+                "Hata Adı": "dizgi",
+                "Hata Türü": "Planlı",
+                "Süre (sn)": 5676
+            },
+            {
+                "Hata Adı": "sensör",
+                "Hata Türü": "Plansız",
+                "Süre (sn)": 345
+            }
+        ],
+        "ozet": {
+            "Toplam Süre (dk)": 241.0,
+            "Planlı Duruş (dk)": 94.6,
+            "Plansız Duruş (dk)": 5.75,
+            "Net Üretim Süresi (dk)": 140.65,
+            "Planlanan Üretim Adedi": 47.225806451612904,
+            "Gerçekleşen Üretim Adedi": 66.0,
+            "Kapasite Kullanım (%)": 58.36099585062241,
+            "Gerçekleşme Oranı (%)": 139.75409836065575
+        }
+    },
+    "2025-08-01_Dizgi - 5": {
+        "tarih": "2025-08-01",
+        "makine": "Dizgi - 5",
+        "operator": "Senanur",
+        "vardiya": "1. Vardiya",
+        "hatalar": [
+            {
+                "Hata Adı": "Dizgi ayarı",
+                "Hata Türü": "Planlı",
+                "Süre (sn)": 789
+            },
+            {
+                "Hata Adı": "Sensör",
+                "Hata Türü": "Plansız",
+                "Süre (sn)": 677
+            }
+        ],
+        "ozet": {
+            "Toplam Süre (dk)": 90.0,
+            "Planlı Duruş (dk)": 13.15,
+            "Plansız Duruş (dk)": 11.283333333333333,
+            "Net Üretim Süresi (dk)": 65.56666666666666,
+            "Planlanan Üretim Adedi": 24.79032258064516,
+            "Gerçekleşen Üretim Adedi": 77.0,
+            "Kapasite Kullanım (%)": 72.85185185185185,
+            "Gerçekleşme Oranı (%)": 310.60507482108
+        }
+    },
+    "2025-08-07": [],
+    "2025-08-08_ggf - 1": [
+        {
+            "operator": "gtfg",
+            "machine": "ggf",
+            "etud_date": "2025-08-08",
+            "vardiya": "1",
+            "start_time": "08:44:00",
+            "end_time": "10:30:00",
+            "initial_count": 5,
+            "final_count": 45,
+            "unit_time": 3,
+            "planned_stop_sec": 0,
+            "unplanned_stop_sec": 0,
+            "planned_stop_min": 0.0,
+            "unplanned_stop_min": 0.0,
+            "etud_duration_min": 106.0,
+            "actual_production": 40,
+            "planned_production": 35.33
+        }
+    ],
+    "2025-08-06_ - 1": {
+        "etud_info": {
+            "operator": "",
+            "machine": "",
+            "vardiya": "1",
+            "start_time": "09:25:00",
+            "end_time": "09:25:00",
+            "initial_count": 0,
+            "final_count": 0,
+            "unit_time": 0.0
+        },
+        "errors": [
+            {
+                "name": "",
+                "type": "Planlı",
+                "duration": 0
+            },
+            {
+                "name": "",
+                "type": "Planlı",
+                "duration": 0
+            },
+            {
+                "name": "",
+                "type": "Planlı",
+                "duration": 0
+            },
+            {
+                "name": "",
+                "type": "Planlı",
+                "duration": 0
+            },
+            {
+                "name": "",
+                "type": "Planlı",
+                "duration": 0
+            }
+        ]
+    }
+}
